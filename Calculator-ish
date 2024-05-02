@@ -1,0 +1,54 @@
+from typing import Callable, Dict
+
+# Function definitions
+def add(a: int, b: int) -> int:
+    return a + b
+
+def multiply(a: int, b: int) -> int:
+    return a * b
+
+def power(exponent: int) -> Callable[[int], int]:
+    def inner(base: int) -> int:
+        return base ** exponent
+    return inner
+
+# Creating square and cube functions using power
+square = power(2)
+cube = power(3)
+
+# Dictionary of operations
+operations: Dict[str, Callable] = {
+    'add': add,
+    'multiply': multiply,
+    'square': square,
+    'cube': cube
+}
+
+# Function for inputting numbers and selecting operation
+def input_numbers() -> tuple:
+    num1 = float(input("Enter the first number: "))
+    num2 = float(input("Enter the second number: "))
+    return num1, num2
+
+def select_operation() -> str:
+    print("Available operations:")
+    for operation in operations:
+        print(operation)
+    return input("Select an operation: ")
+
+# Using operations
+while True:
+    operation = select_operation()
+    if operation not in operations:
+        print("Invalid operation")
+        continue
+    if operation in ['square', 'cube']:
+        num = float(input("Enter a number: "))
+        result = operations[operation](num)
+        print(f"Result of {operation}: {result}")
+    else:
+        num1, num2 = input_numbers()
+        result = operations[operation](num1, num2)
+        print(f"Result of {operation}: {result}")
+    if input("Continue? (y/n): ").strip().lower() != 'y':
+        break
