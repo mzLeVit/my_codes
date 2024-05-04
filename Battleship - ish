@@ -1,0 +1,95 @@
+import random
+
+class Battleship:
+    def __init__(self):
+        self.player_board = [['-' for _ in range(10)] for _ in range(10)]
+        self.computer_board = [['-' for _ in range(10)] for _ in range(10)]
+        self.ships = {'Aircraft Carrier': 5, 'Battleship': 4, 'Submarine': 3, 'Cruiser': 3, 'Destroyer': 2}
+        self.computer_ships = {}
+        self.generate_ships()
+
+    def generate_ships(self):
+        for ship, size in self.ships.items():
+            placed = False
+            while not placed:
+                direction = random.choice(['horizontal', 'vertical'])
+                if direction == 'horizontal':
+                    row = random.randint(0, 9)
+                    col = random.randint(0, 10 - size)
+                    if all(self.computer_board[row][col+i] == '-' for i in range(size)):
+                        for i in range(size):
+                            self.computer_board[row][col+i] = 'O'
+                        placed = True
+                else:
+                    row = random.randint(0, 10 - size)
+                    col = random.randint(0, 9)
+                    if all(self.computer_board[row+i][col] == '-' for i in range(size)):
+                        for i in range(size):
+                            self.computer_board[row+i][col] = 'O'
+                        placed = True
+            self.computer_ships[ship] = [(row, col), direction]
+
+    def print_boards(self):
+        print("Player's Board:")
+        for row in self.player_board:
+            print(' '.join(row))
+        print("\nComputer's Board:")
+        for row in self.computer_board:
+            print(' '.join(row))
+
+    def player_turn(self):
+        while True:
+            try:
+                row, col = map(int, input("Enter target coordinates (row col): ").split())
+                if not (0 <= row < 10 and 0 <= col < 10):
+                    print("Please enter valid coordinates (0-9).")
+                    continue
+                if self.player_board[row][col] != '-':
+                    print("You've already targeted this position. Try again.")
+                    continue
+                return row, col
+            except ValueError:
+                print("Please enter two integers separated by a space.")
+
+    def computer_turn(self):
+        while True:
+            row = random.randint(0, 9)
+            col = random.randint(0, 9)
+            if self.computer_board[row][col] == '-':
+                return row, col
+
+    def play(self):
+        print("Welcome to Battleship!")
+        self.print_boards()
+
+        while any('O' in row for row in self.computer_board):
+            print("\nPlayer's Turn:")
+            row, col = self.player_turn()
+            if self.computer_board[row][col] == 'O':
+                print("Hit!")
+                self.computer_board[row][col] = 'X'
+            else:
+                print("Miss!")
+                self.computer_board[row][col] = '*'
+            self.print_boards()
+
+            if all('X' in row or '*' in row for row in self.computer_board):
+                print("Congratulations! You sunk all the computer's ships!")
+                break
+
+            print("\nComputer's Turn:")
+            row, col = self.computer_turn()
+            if self.player_board[row][col] == 'O':
+                print("The computer hit your ship!")
+                self.player_board[row][col] = 'X'
+            else:
+                print("The computer missed!")
+                self.player_board[row][col] = '*'
+            self.print_boards()
+
+            if all('X' in row for row in self.player_board):
+                print("Game Over! The computer sunk all your ships.")
+                break
+
+game = Battleship()
+game.play()
