@@ -97,7 +97,7 @@ def hangman():
             print("Please enter a single letter.")
         elif guess in word:
             guessed_letters.append(guess)
-            if set(guessed_word) == set(word):
+            if guessed_word == word:
                 print("Congratulations! You guessed the word:", word)
                 break
         else:
